@@ -1,0 +1,2 @@
+Carpeta reservada para los 15 vídeos del bloque superiores.
+Cuando estén listos, coloca aquí los vídeos numerados. Después añade su ruta en el campo videoUrl del ejercicio correspondiente en assets/js/data.js.

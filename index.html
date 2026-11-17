@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Espacio personal de Marc Fresquet sobre ejercicio físico, calidad de vida, movimiento e investigación en CAFYD.">
+  <meta name="theme-color" content="#10231f">
+  <title>Marc Fresquet | Movimiento, salud y rendimiento</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    /* Estilos específicos integrados para el Cuestionario con Ranking y Porcentajes */
+    .quiz-result-container { padding: 20px 0; }
+    .quiz-name-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+    .quiz-name-box label { display: block; font-weight: 600; margin-bottom: 8px; color: #0f172a; }
+    .quiz-name-box input[type="text"] { width: 100%; padding: 12px 16px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 1rem; outline: none; transition: border-color 0.2s; background: #fff; }
+    .quiz-name-box input[type="text"]:focus { border-color: #2563eb; }
+    .score-summary-card { text-align: center; padding: 24px; background: #f8fafc; border-radius: 12px; margin-bottom: 24px; border: 1px solid #e2e8f0; }
+    .big-score-num { font-size: 3rem; font-weight: 800; color: #2563eb; display: block; line-height: 1.1; margin-bottom: 8px; }
+    .ranking-table-wrap { overflow-x: auto; margin-top: 15px; }
+    .ranking-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; }
+    .ranking-table th, .ranking-table td { padding: 12px 14px; border-bottom: 1px solid #e2e8f0; }
+    .ranking-table th { font-weight: 700; color: #334155; background: #f8fafc; }
+    .ranking-row-highlight { background-color: #eff6ff !important; font-weight: 600; }
+    .badge-user-tag { background: #2563eb; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+    .progress-bar-bg { width: 90px; height: 8px; background: #e2e8f0; border-radius: 4px; display: inline-block; vertical-align: middle; margin-right: 8px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: #10b981; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#inicio" aria-label="Ir al inicio">
+      <span class="brand-mark">MF<span>.</span></span>
+      <span class="brand-copy"><strong>Marc Fresquet</strong><small>Movimiento · Salud · Rendimiento</small></span>
+    </a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
+    <nav class="main-nav" id="mainNav" aria-label="Navegación principal">
+      <a href="#inicio" class="nav-link active">Inicio</a>
+      <a href="#calidad-vida" class="nav-link">Calidad de vida</a>
+      <a href="#investigaciones" class="nav-link">Investigaciones</a>
+      <a href="#recursos" class="nav-link">Recursos</a>
+      <a href="#sobre-mi" class="nav-link">Sobre mí</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-line"></span> CAFYD · Ejercicio físico y salud</p>
+          <h1>Entender el movimiento.<br><em>Mejorar la vida.</em></h1>
+          <p class="hero-lead">Un espacio personal para compartir conocimiento sobre ejercicio físico, salud, rendimiento y movimiento. Ciencia aplicada, ideas claras y recursos útiles para llevar una vida más activa.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#calidad-vida">Explorar el proyecto <span>↗</span></a>
+            <a class="text-link" href="#sobre-mi">Conoce este espacio <span>→</span></a>
+          </div>
+          <div class="hero-note"><span class="status-dot"></span> Aprendizaje continuo · Ciencia aplicada · Movimiento para todos</div>
+        </div>
+        <div class="hero-art" aria-label="Imagen abstracta de movimiento y entrenamiento">
+          <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+          <div class="art-label label-top">MOVE WITH PURPOSE</div>
+          <div class="art-core"><span>MF</span><small>CAFYD</small></div>
+          <div class="art-label label-bottom">01 / 03 — MOVIMIENTO</div>
+          <div class="art-sticker">La constancia<br>construye<br>capacidad.</div>
+        </div>
+      </div>
+      <div class="hero-bottom"><span>Valencia, España</span><span>Conocimiento que se mueve</span><span>© <span id="year">2026</span> Marc Fresquet</span></div>
+    </section>
+
+    <section class="intro section-wrap">
+      <div class="section-kicker">01 — El propósito</div>
+      <div class="intro-content">
+        <h2>El ejercicio físico no debería ser complicado. <em>Debería formar parte de la vida.</em></h2>
+        <p>Este sitio nace como un proyecto académico y personal durante mi formación en Ciencias de la Actividad Física y del Deporte. Quiero convertirlo en un lugar donde reunir trabajos, recursos, experiencias e investigaciones sobre cómo el movimiento puede contribuir a la salud y a la calidad de vida.</p>
+      </div>
+    </section>
+
+    <section class="project-section" id="calidad-vida">
+      <div class="section-wrap">
+        <div class="section-heading">
+          <div><div class="section-kicker">02 — Proyecto destacado</div><p class="section-overline">Guía práctica · Entrenamiento en casa</p><h2>Ejercicio físico para<br><em>la calidad de vida.</em></h2></div>
+          <p class="section-description">Una colección de ejercicios accesibles para entrenar en casa con el peso corporal y materiales cotidianos. Aprende cómo ejecutar cada movimiento, qué musculatura participa y qué necesitas para empezar.</p>
+        </div>
+        <div class="project-stats">
+          <div><strong>45</strong><span>Ejercicios</span></div><div><strong>03</strong><span>Bloques de trabajo</span></div><div><strong>03</strong><span>Cuestionarios</span></div><div><strong>01</strong><span>Objetivo: moverse mejor</span></div>
+        </div>
+        <div class="category-grid">
+          <a class="category-card card-upper" href="#biblioteca" data-open-category="superiores">
+            <div class="category-number">01 / 03</div><div class="category-icon">↗</div><div class="category-card-bottom"><h3>Extremidades<br>superiores</h3><p>Empujes, tracciones y control del tren superior.</p><span>Ver 15 ejercicios <b>↗</b></span></div>
+          </a>
+          <a class="category-card card-lower" href="#biblioteca" data-open-category="inferiores">
+            <div class="category-number">02 / 03</div><div class="category-icon">↗</div><div class="category-card-bottom"><h3>Extremidades<br>inferiores</h3><p>Fuerza, estabilidad y patrones de rodilla y cadera.</p><span>Ver 15 ejercicios <b>↗</b></span></div>
+          </a>
+          <a class="category-card card-global" href="#biblioteca" data-open-category="globales">
+            <div class="category-number">03 / 03</div><div class="category-icon">↗</div><div class="category-card-bottom"><h3>Ejercicios<br>globales</h3><p>Estabilidad, coordinación y transferencia a la vida diaria.</p><span>Ver 15 ejercicios <b>↗</b></span></div>
+          </a>
+        </div>
+
+        <div class="library-head" id="biblioteca">
+          <div><div class="section-kicker">03 — Biblioteca de ejercicios</div><h2>Encuentra tu<br><em>siguiente movimiento.</em></h2></div>
+          <div class="library-controls"><label class="search-box"><span>⌕</span><input type="search" id="exerciseSearch" placeholder="Buscar ejercicio..." aria-label="Buscar ejercicio"></label></div>
+        </div>
+        <div class="tabs" role="tablist" aria-label="Categorías de ejercicios">
+          <button class="tab active" data-category="superiores" role="tab" aria-selected="true">Superiores <span>15</span></button>
+          <button class="tab" data-category="inferiores" role="tab" aria-selected="false">Inferiores <span>15</span></button>
+          <button class="tab" data-category="globales" role="tab" aria-selected="false">Globales <span>15</span></button>
+        </div>
+        <div class="exercise-grid" id="exerciseGrid" aria-live="polite"></div>
+        <p class="library-footnote">Los vídeos demostrativos de extremidades superiores e inferiores ya están incorporados. El bloque de ejercicios globales se completará cuando estén listos sus vídeos. Cada ficha incluye técnica, musculatura implicada y prerrequisitos.</p>
+      </div>
+    </section>
+
+    <section class="quiz-section section-wrap" id="cuestionarios">
+      <div class="quiz-intro"><div class="section-kicker">04 — Aprende y comprueba</div><h2>¿Cuánto sabes<br><em>sobre movimiento?</em></h2><p>Comprueba lo que has aprendido con tres cuestionarios breves. Diez preguntas por bloque, explicaciones después de cada respuesta y una reflexión final.</p><div class="quiz-tip">No es un examen: es una forma de aprender, repasar y observar el movimiento con otros ojos.</div></div>
+      <div class="quiz-list" id="quizList">
+        <button class="quiz-item" data-quiz="superiores"><span class="quiz-item-num">01</span><span><strong>Extremidades superiores</strong><small>Empujes, tracciones y musculatura del tren superior</small></span><span class="quiz-item-arrow">↗</span></button>
+        <button class="quiz-item" data-quiz="inferiores"><span class="quiz-item-num">02</span><span><strong>Extremidades inferiores</strong><small>Sentadillas, zancadas y patrones de cadera</small></span><span class="quiz-item-arrow">↗</span></button>
+        <button class="quiz-item" data-quiz="globales"><span class="quiz-item-num">03</span><span><strong>Ejercicios globales</strong><small>Estabilidad, coordinación y transferencia funcional</small></span><span class="quiz-item-arrow">↗</span></button>
+      </div>
+      <div class="quiz-panel" id="quizPanel" hidden></div>
+    </section>
+
+    <section class="future-section" id="investigaciones">
+      <div class="section-wrap future-grid">
+        <div><div class="section-kicker">05 — En construcción</div><p class="section-overline">Curiosidad · Evidencia · Aplicación</p><h2>Investigar para<br><em>seguir aprendiendo.</em></h2></div>
+        <div class="future-copy"><p>Este apartado crecerá con el tiempo y reunirá trabajos académicos, revisiones, proyectos, análisis y reflexiones relacionadas con el ejercicio físico y las ciencias del deporte.</p><div class="future-placeholder"><span class="future-plus">＋</span><span><strong>Próximamente</strong><small>Nuevos proyectos e investigaciones</small></span><span class="future-tag">EN DESARROLLO</span></div></div>
+      </div>
+    </section>
+
+    <section class="resources-section section-wrap" id="recursos">
+      <div class="section-kicker">06 — Caja de herramientas</div><div class="resources-heading"><h2>Recursos para<br><em>llevar a la práctica.</em></h2><p>Materiales de apoyo, lecturas y herramientas que irán ampliando este espacio.</p></div>
+      <div class="resource-grid">
+        <article class="resource-card"><span>01 / GUÍAS</span><div class="resource-symbol">▤</div><h3>Guías prácticas</h3><p>Material divulgativo para comprender y aplicar conceptos del ejercicio físico.</p></article>
+        <article class="resource-card"><span>02 / LECTURAS</span><div class="resource-symbol">⌁</div><h3>Lecturas y evidencia</h3><p>Artículos y referencias para profundizar en temas de salud, fuerza y movimiento.</p></article>
+        <article class="resource-card"><span>03 / HERRAMIENTAS</span><div class="resource-symbol">＋</div><h3>Herramientas</h3><p>Recursos útiles para organizar, evaluar y desarrollar propuestas de ejercicio.</p></article>
+      </div>
+    </section>
+
+    <section class="about-section" id="sobre-mi"><div class="section-wrap about-grid"><div><div class="section-kicker">07 — Sobre este espacio</div><h2>Formación en<br><em>movimiento.</em></h2></div><div class="about-copy"><p class="about-lead">Soy Marc Fresquet, estudiante de Ciencias de la Actividad Física y del Deporte.</p><p>Este espacio es una extensión de mi aprendizaje: un lugar para ordenar ideas, compartir proyectos y acercar el conocimiento sobre ejercicio físico a cualquier persona interesada en moverse mejor.</p><p>El objetivo es seguir construyendo este sitio durante mi formación y mi futuro recorrido profesional, incorporando nuevos trabajos, investigaciones y recursos basados en el conocimiento y la experiencia.</p><div class="about-signature">Marc Fresquet <span>· CAFYD</span></div></div></div></section>
+  </main>
+
+  <footer class="site-footer"><div class="footer-top"><a class="brand brand-footer" href="#inicio"><span class="brand-mark">MF<span>.</span></span><span class="brand-copy"><strong>Marc Fresquet</strong><small>Movimiento · Salud · Rendimiento</small></span></a><p>Aprender, aplicar y compartir.<br>Un movimiento cada vez.</p><a href="#inicio" class="back-top">Volver arriba ↑</a></div><div class="footer-bottom"><span>© <span id="yearFooter">2026</span> Marc Fresquet</span><span>Contenido divulgativo y educativo. Adapta el ejercicio a tu condición y experiencia.</span><span>Hecho para evolucionar.</span></div></footer>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
