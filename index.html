@@ -1,149 +1,343 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Espacio personal de Marc Fresquet sobre ejercicio físico, calidad de vida, movimiento e investigación en CAFYD.">
-  <meta name="theme-color" content="#10231f">
-  <title>Marc Fresquet | Movimiento, salud y rendimiento</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/styles.css">
-  <style>
-    /* Estilos específicos integrados para el Cuestionario con Ranking y Porcentajes */
-    .quiz-result-container { padding: 20px 0; }
-    .quiz-name-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
-    .quiz-name-box label { display: block; font-weight: 600; margin-bottom: 8px; color: #0f172a; }
-    .quiz-name-box input[type="text"] { width: 100%; padding: 12px 16px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 1rem; outline: none; transition: border-color 0.2s; background: #fff; }
-    .quiz-name-box input[type="text"]:focus { border-color: #2563eb; }
-    .score-summary-card { text-align: center; padding: 24px; background: #f8fafc; border-radius: 12px; margin-bottom: 24px; border: 1px solid #e2e8f0; }
-    .big-score-num { font-size: 3rem; font-weight: 800; color: #2563eb; display: block; line-height: 1.1; margin-bottom: 8px; }
-    .ranking-table-wrap { overflow-x: auto; margin-top: 15px; }
-    .ranking-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; }
-    .ranking-table th, .ranking-table td { padding: 12px 14px; border-bottom: 1px solid #e2e8f0; }
-    .ranking-table th { font-weight: 700; color: #334155; background: #f8fafc; }
-    .ranking-row-highlight { background-color: #eff6ff !important; font-weight: 600; }
-    .badge-user-tag { background: #2563eb; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
-    .progress-bar-bg { width: 90px; height: 8px; background: #e2e8f0; border-radius: 4px; display: inline-block; vertical-align: middle; margin-right: 8px; overflow: hidden; }
-    .progress-bar-fill { height: 100%; background: #10b981; border-radius: 4px; }
-  </style>
-</head>
-<body>
-  <header class="site-header">
-    <a class="brand" href="#inicio" aria-label="Ir al inicio">
-      <span class="brand-mark">MF<span>.</span></span>
-      <span class="brand-copy"><strong>Marc Fresquet</strong><small>Movimiento · Salud · Rendimiento</small></span>
-    </a>
-    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
-    <nav class="main-nav" id="mainNav" aria-label="Navegación principal">
-      <a href="#inicio" class="nav-link active">Inicio</a>
-      <a href="#calidad-vida" class="nav-link">Calidad de vida</a>
-      <a href="#investigaciones" class="nav-link">Investigaciones</a>
-      <a href="#recursos" class="nav-link">Recursos</a>
-      <a href="#sobre-mi" class="nav-link">Sobre mí</a>
-    </nav>
-  </header>
+/* =================================================================les
+   CÓDIGO PRINCIPAL - APP.JS (Marc Fresquet - CAFYD)
+   ================================================================= */
 
-  <main>
-    <section class="hero" id="inicio">
-      <div class="hero-grid">
-        <div class="hero-copy">
-          <p class="eyebrow"><span class="eyebrow-line"></span> CAFYD · Ejercicio físico y salud</p>
-          <h1>Entender el movimiento.<br><em>Mejorar la vida.</em></h1>
-          <p class="hero-lead">Un espacio personal para compartir conocimiento sobre ejercicio físico, salud, rendimiento y movimiento. Ciencia aplicada, ideas claras y recursos útiles para llevar una vida más activa.</p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="#calidad-vida">Explorar el proyecto <span>↗</span></a>
-            <a class="text-link" href="#sobre-mi">Conoce este espacio <span>→</span></a>
-          </div>
-          <div class="hero-note"><span class="status-dot"></span> Aprendizaje continuo · Ciencia aplicada · Movimiento para todos</div>
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Menú móvil (Hamburguesa)
+    const menuToggle = document.getElementById('menuToggle');
+    const mainNav = document.getElementById('mainNav');
+
+    if (menuToggle && mainNav) {
+        menuToggle.addEventListener('click', () => {
+            const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
+            menuToggle.setAttribute('aria-expanded', !expanded);
+            mainNav.classList.toggle('open');
+        });
+    }
+
+    // Actualizar año en footer y hero
+    const currentYear = new Date().getFullYear();
+    const yearEl = document.getElementById('year');
+    const yearFooterEl = document.getElementById('yearFooter');
+    if (yearEl) yearEl.textContent = currentYear;
+    if (yearFooterEl) yearFooterEl.textContent = currentYear;
+
+    // 2. Biblioteca de Ejercicios y Pestañas
+    inicializarBibliotecaEjercicios();
+
+    // 3. Sistema de Cuestionarios y Ranking
+    inicializarCuestionarios();
+});
+
+/* =================================================================
+   BIBLIOTECA DE EJERCICIOS
+   ================================================================= */
+function inicializarBibliotecaEjercicios() {
+    const grid = document.getElementById('exerciseGrid');
+    const searchInput = document.getElementById('exerciseSearch');
+    const tabs = document.querySelectorAll('.tab');
+    const categoryCards = document.querySelectorAll('[data-open-category]');
+
+    if (!grid) return;
+
+    let categoriaActual = 'superiores';
+
+    function renderizarEjercicios(filtro = '', categoria = categoriaActual) {
+        if (typeof ejerciciosData === 'undefined') {
+            grid.innerHTML = '<p>Cargando datos de ejercicios...</p>';
+            return;
+        }
+
+        const lista = ejerciciosData[categoria] || [];
+        const filtrados = lista.filter(ex => 
+            ex.nombre.toLowerCase().includes(filtro.toLowerCase()) ||
+            ex.descripcion.toLowerCase().includes(filtro.toLowerCase())
+        );
+
+        if (filtrados.length === 0) {
+            grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding: 40px; color:#64748b;">No se han encontrado ejercicios con esa búsqueda.</p>';
+            return;
+        }
+
+        grid.innerHTML = filtrados.map(ex => `
+            <article class="exercise-card">
+                <div class="exercise-header">
+                    <span class="exercise-tag">${ex.nivel || 'Principiante'}</span>
+                    <span class="exercise-category-badge">${categoria.toUpperCase()}</span>
+                </div>
+                <h3>${ex.nombre}</h3>
+                <p>${ex.descripcion}</p>
+                <div class="exercise-meta">
+                    <span><strong>Músculos:</strong> ${ex.musculos || 'Globales'}</span>
+                    <span><strong>Material:</strong> ${ex.material || 'Peso corporal'}</span>
+                </div>
+                ${ex.videoUrl ? `<a href="${ex.videoUrl}" target="_blank" class="exercise-video-link">Ver vídeo demostrativo ↗</a>` : '<span class="exercise-no-video">Vídeo próximamente</span>'}
+            </article>
+        `).join('');
+    }
+
+    // Eventos de pestañas
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+            });
+            tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
+            categoriaActual = tab.getAttribute('data-category');
+            renderizarEjercicios(searchInput ? searchInput.value : '', categoriaActual);
+        });
+    });
+
+    // Accesos directos desde tarjetas superiores
+    categoryCards.forEach(card => {
+        card.addEventListener('click', (e) => {
+            e.preventDefault();
+            const cat = card.getAttribute('data-open-category');
+            const targetTab = document.querySelector(`.tab[data-category="${cat}"]`);
+            if (targetTab) targetTab.click();
+            document.getElementById('biblioteca').scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+
+    // Buscador
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            renderizarEjercicios(e.target.value, categoriaActual);
+        });
+    }
+
+    renderizarEjercicios();
+}
+
+/* =================================================================
+   SISTEMA DE CUESTIONARIOS, RANKING Y LOCALSTORAGE
+   ================================================================= */
+function inicializarCuestionarios() {
+    const quizButtons = document.querySelectorAll('.quiz-item');
+    const quizPanel = document.getElementById('quizPanel');
+
+    if (!quizPanel) return;
+
+    quizButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tipoQuiz = btn.getAttribute('data-quiz');
+            cargarCuestionario(tipoQuiz);
+        });
+    });
+}
+
+function obtenerPreguntasQuiz(tipo) {
+    // Base de preguntas simuladas / estructuradas por categoría para CAFYD
+    const bancos = {
+        superiores: [
+            { q: "¿Qué articulación es la principal responsable del movimiento de flexión de hombro?", opciones: ["Codo", "Escapulotorácica y Glenohumeral", "Muñeca", "Acromioclavicular"], correcta: 1, exp: "La articulación glenohumeral junto con el complejo escapulotorácico permiten el rango completo de flexión del hombro." },
+            { q: "En un ejercicio de press de banca, ¿qué músculo actúa como principal antagonista del pectoral mayor durante la fase concéntrica?", opciones: ["Tríceps braquial", "Deltoides anterior", "Dorsal ancho", "Bíceps"], correcta: 2, exp: "El dorsal ancho realiza acciones opuestas a la aducción horizontal y flexión del hombro ejecutadas por el pectoral." },
+            { q: "¿Cuál es la función principal de los músculos manguito rotador?", opciones: ["Generar máxima velocidad en sprint", "Estabilizar la cabeza del húmero en la cavidad glenoidea", "Flexionar fuertemente el codo", "Extender la columna vertebral"], correcta: 1, exp: "El manguito rotador comprime y estabiliza la cabeza humeral contra la glenoides durante los movimientos." },
+            { q: "Para un trabajo óptimo de tracción horizontal, ¿qué patrón biomecánico se prioriza?", opciones: ["Flexión de rodilla", "Extensión de cadera", "Retracción escapular y flexión de codo", "Rotación externa pura"], correcta: 2, exp: "La retracción escapular combinada con la flexión de codo define los remos y tracciones horizontales." },
+            { q: "¿Qué músculo realiza la extensión del codo en un ejercicio de press?", opciones: ["Bíceps braquial", "Tríceps braquial", "Braquiorradial", "Coracobraquial"], correcta: 1, exp: "El tríceps braquial es el único extensor principal del codo." },
+            { q: "En la dominada, ¿en qué fase se produce mayor reclutamiento del dorsal ancho?", opciones: ["Solo en la extensión", "En la fase concéntrica de tracción", "En el punto muerto inferior", "En la fase isométrica pasiva"], correcta: 1, exp: "La fase concéntrica concentra el pico de fuerza y activación del dorsal." },
+            { q: "¿Qué tipo de contracción predomina al bajar el peso de forma controlada en un press militar?", opciones: ["Concéntrica", "Excéntrica", "Isométrica", "Auxotónica"], correcta: 1, exp: "La bajada o fase excéntrica frena la gravedad controlando la carga." },
+            { q: "¿Qué hueso forma parte de la cintura escapular?", opciones: ["Fémur", "Clavícula", "Radio", "Tibia"], correcta: 1, exp: "La clavícula y la escápula forman la cintura escapular." },
+            { q: "Un desequilibrio entre rotadores internos y externos puede derivar en:", opciones: ["Mayor rendimiento en salto", "Patologías e inestabilidad de hombro", "Hipertrofia simétrica", "Mejor capacidad pulmonar"], correcta: 1, exp: "La descompensación altera la biomecánica y predispone a lesiones." },
+            { q: "¿Qué plano anatómico divide el cuerpo en mitades izquierda y derecha?", opciones: ["Plano frontal", "Plano transversal", "Plano sagital", "Plano horizontal"], correcta: 2, exp: "El plano sagital divide el cuerpo en los hemisferios derecho e izquierdo." }
+        ],
+        inferiores: [
+            { q: "¿Qué grupo muscular es el principal extensor de la rodilla?", opciones: ["Isquiosurales", "Cuádriceps", "Gemelos", "Glúteo mayor"], correcta: 1, exp: "El cuádriceps femoral es el motor principal en la extensión de la rodilla." },
+            { q: "En una sentadilla profunda, ¿qué articulación experimenta mayor momento de flexión?", opciones: ["Tobillo, rodilla y cadera simultáneamente", "Únicamente el cuello", "Solo la muñeca", "La articulación temporomandibular"], correcta: 0, exp: "La sentadilla es un patrón multiarticular que moviliza tobillo, rodilla y cadera." },
+            { q: "¿Qué músculos componen principalmente los isquiosurales?", opciones: ["Recto femoral y vastos", "Bíceps femoral, semitendinoso y semimembranoso", "Gastronemios y sóleo", "Tibial anterior"], correcta: 1, exp: "Los isquiosurales actúan en la flexión de rodilla y extensión de cadera." },
+            { q: "Para enfatizar el trabajo de glúteo mayor en una zancada, ¿qué variante es más adecuada?", opciones: ["Zancada corta con torso vertical", "Zancada larga con ligera inclinación anterior de tronco", "Flexión corta de rodilla sin paso", "Salto vertical sin desplazamiento"], correcta: 1, exp: "Una mayor distancia anteroposterior e inclinación de cadera incrementa el brazo de palanca en el glúteo." },
+            { q: "¿Qué función cumple el músculo sóleo?", opciones: ["Flexión dorsal rápida", "Flexión plantar estática y postural", "Abducción de cadera", "Rotación interna de rodilla"], correcta: 1, exp: "El sóleo está compuesto predominantemente por fibras lentas idóneas para elmaintain postural y la flexión plantar." },
+            { q: "¿Qué prueba evalúa la movilidad del tobillo en cadena cerrada?", opciones: ["Test de Lunge o Dorsiflexión de tobillo", "Test de Thomas", "Test de Apley", "Course Navette"], correcta: 0, exp: "El test de la zancada contra la pared mide la dorsiflexión en centímetros o grados." },
+            { q: "¿Qué hueso soporta la mayor parte del peso corporal en la pierna?", opciones: ["Peroné", "Tibia", "Rótula", "Astrágalo exclusivamente"], correcta: 1, exp: "La tibia es el hueso principal de carga en el miembro inferior." },
+            { q: "¿Qué acción realiza el glúteo medio durante la marcha unipodal?", opciones: ["Aducción para cruzar la pierna", "Estabilización de la pelvis evitando el tropiezo contralateral", "Flexión máxima de rodilla", "Extensión de columna"], correcta: 1, exp: "Evita la caída de la pelvis del lado que no apoya (signo de Trendelenburg)." },
+            { q: "¿Qué tipo de palanca biomecánica predomina en la flexión plantar del tobillo (ponérse de puntillas)?", opciones: ["Palanca de primer género", "Palanca de segundo género", "Palanca de tercer género", "Palanca interapofisaria"], correcta: 1, exp: "La resistencia queda en medio del fulcro (articulación metatarsofalángica) y la potencia (tríceps sural)." },
+            { q: "¿Cuál es el ángulo óptimo aproximado de flexión de rodilla en un salto vertical óptimo (contramovimiento)?", opciones: ["90 grados", "180 grados", "10 grados", "30 grados"], correcta: 0, exp: "Un rango cercano a los 90 grados optimiza el ciclo de estiramiento-acortamiento (CEA)." }
+        ],
+        globales: [
+            { q: "¿Qué define a un ejercicio global o funcional?", opciones: ["Se aísla un solo músculo en máquina", "Involucra múltiples articulaciones y cadenas cinéticas", "Se realiza exclusivamente sentado", "No requiere consumo energético"], correcta: 1, exp: "Los ejercicios globales integran múltiples articulaciones simulando patrones de movimiento naturales." },
+            { q: "¿Qué capacidad física básica evalúa el salto horizontal sin impulso?", opciones: ["Resistencia aeróbica", "Potencia del tren inferior / fuerza explosiva", "Flexibilidad pasiva", "Velocidad gestual de brazos"], correcta: 1, exp: "Mide la explosividad y aplicación de fuerza horizontal del miembro inferior." },
+            { q: "¿Qué es el Core en el contexto del entrenamiento de movimiento?", opciones: ["Únicamente los abdominales superficiales (six-pack)", "El complejo lumbo-pélvico-abdominal estabilizador", "Los músculos intrínsecos de la mano", "Los gemelos"], correcta: 1, exp: "El core engloba la musculatura central que transfiere fuerzas entre extremidades." },
+            { q: "¿Por qué es importante el ciclo de estiramiento-acortamiento (CEA)?", opciones: ["Reduce la temperatura corporal", "Almacena y reutiliza energía elástica en el tendón-músculo", "Elimina la necesidad de calentar", "Bloquea el sistema nervioso"], correcta: 1, exp: "Permite potenciar la fuerza explosiva gracias a la rigidez elástica acumulada." },
+            { q: "¿Qué evalúa el test de Course Navette (ida y vuelta de 20m)?", opciones: ["La potencia aeróbica máxima / consumo máximo de oxígeno", "La fuerza máxima en 1RM", "La flexibilidad isquiosural", "La velocidad en 30 metros"], correcta: 0, exp: "Es una prueba clásica progresiva para estimar la capacidad cardiorrespiratoria." },
+            { q: "¿Qué papel juega la propiocepción en el movimiento humano?", opciones: ["Aumenta el ritmo cardíaco", "Informa al sistema nervioso sobre la posición corporal en el espacio", "Produce ácido láctico", "Genera contracción pasiva"], correcta: 1, exp: "Los husos musculares y órganos tendinosos envían información clave para el equilibrio y control motor." },
+            { q: "¿Cuál es el objetivo de un buen calentamiento específico en CAFYD?", opciones: ["Causar fatiga prematura", "Elevar temperatura corporal, lubricar articulaciones y activar sistema nervioso", "Estirar al fallo muscular", "Disminuir la frecuencia cardiaca"], correcta: 1, exp: "Prepara física y mentalmente al deportista para la exigencia posterior." },
+            { q: "¿Qué principio del entrenamiento se basa en aumentar progresivamente la carga?", opciones: ["Principio de reversibilidad", "Principio de sobrecarga progresiva", "Principio de individualización", "Principio de variedad"], correcta: 1, exp: "Es indispensable para lograr adaptaciones morfo-funcionales continuas." },
+            { q: "¿Qué mide la prueba de plancha isométrica frontal?", opciones: ["Resistencia estática de la musculatura estabilizadora del core", "Velocidad máxima de desplazamiento", "Potencia anaeróbica láctica", "Agilidad en zigzag"], correcta: 0, exp: "Valora la capacidad de mantener la estabilidad lumbo-pélvica frente a la gravedad." },
+            { q: "¿Qué importancia tiene la fase de vuelta a la calma?", opciones: ["Provocar mareos", "Facilitar la recuperación metabólica y vuelta gradual a parámetros basales", "Aumentar la tensión arterial de forma brusca", "Ninguna utilidad científica"], correcta: 1, exp: "Ayuda a normalizar la frecuencia cardiaca y metabolizar residuos metabólicos." }
+        ]
+    };
+
+    return bancos[tipo] || bancos.superiores;
+}
+
+function cargarCuestionario(tipo) {
+    const quizPanel = document.getElementById('quizPanel');
+    if (!quizPanel) return;
+
+    const preguntas = obtenerPreguntasQuiz(tipo);
+    let preguntaActual = 0;
+    let aciertos = 0;
+    let respuestasUsuario = [];
+
+    quizPanel.hidden = false;
+
+    function renderizarPregunta() {
+        if (preguntaActual >= preguntas.length) {
+            mostrarPantallaNombreYResultados(aciertos, preguntas.length, tipo);
+            return;
+        }
+
+        const p = preguntas[preguntaActual];
+        quizPanel.innerHTML = `
+            <div class="card quiz-card" style="background:#fff; border-radius:12px; padding:24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <span style="font-size:0.85rem; font-weight:700; color:#2563eb; text-transform:uppercase;">Pregunta ${preguntaActual + 1} de ${preguntas.length}</span>
+                    <span style="font-size:0.85rem; color:#64748b;">Bloque: ${tipo.toUpperCase()}</span>
+                </div>
+                <h3 style="font-size:1.25rem; color:#0f172a; margin-bottom:20px;">${p.q}</h3>
+                <div class="quiz-options" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+                    ${p.opciones.map((op, idx) => `
+                        <button class="quiz-option-btn" data-idx="${idx}" style="text-align:left; padding:12px 16px; border:2px solid #e2e8f0; border-radius:8px; background:#f8fafc; cursor:pointer; font-size:1rem; transition:all 0.2s;">
+                            <strong>${String.fromCharCode(65 + idx)}.</strong>${op}
+                        </button>
+                    `).join('')}
+                </div>
+                <div id="quizFeedback" style="margin-bottom:15px; font-weight:600;" hidden></div>
+                <button id="quizNextBtn" class="button button-primary" style="display:none; width:100%; padding:12px;" disabled>Siguiente pregunta ➔</button>
+            </div>
+        `;
+
+        const botonesOpciones = quizPanel.querySelectorAll('.quiz-option-btn');
+        const nextBtn = document.getElementById('quizNextBtn');
+        const feedback = document.getElementById('quizFeedback');
+
+        botonesOpciones.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const seleccionada = parseInt(e.currentTarget.getAttribute('data-idx'));
+                const esCorrecta = seleccionada === p.correcta;
+
+                if (esCorrecta) aciertos++;
+                respuestasUsuario.push({ pregunta: p.q, seleccionada, esCorrecta });
+
+                // Deshabilitar botones y mostrar colores
+                botonesOpciones.forEach((b, idx) => {
+                    b.style.pointerEvents = 'none';
+                    if (idx === p.correcta) {
+                        b.style.background = '#d1fae5';
+                        b.style.borderColor = '#10b981';
+                        b.style.color = '#065f46';
+                    } else if (idx === seleccionada && !esCorrecta) {
+                        b.style.background = '#fee2e2';
+                        b.style.borderColor = '#ef4444';
+                        b.style.color = '#991b1b';
+                    }
+                });
+
+                feedback.hidden = false;
+                feedback.innerHTML = esCorrecta ? 
+                    `<span style="color:#059669;">✔ ¡Correcto!</span> <p style="font-weight:400; color:#334155; margin-top:4px;">${p.exp}</p>` :
+                    `<span style="color:#dc2626;">✖ Incorrecto.</span> <p style="font-weight:400; color:#334155; margin-top:4px;">${p.exp}</p>`;
+
+                nextBtn.style.display = 'block';
+                nextBtn.removeAttribute('disabled');
+            });
+        });
+
+        nextBtn.addEventListener('click', () => {
+            preguntaActual++;
+            renderizarPregunta();
+        });
+
+        quizPanel.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    renderizarPregunta();
+}
+
+function mostrarPantallaNombreYResultados(aciertos, total, tipo) {
+    const quizPanel = document.getElementById('quizPanel');
+    if (!quizPanel) return;
+
+    const porcentaje = Math.round((aciertos / total) * 100);
+
+    quizPanel.innerHTML = `
+        <div class="card quiz-result-card" style="background:#fff; border-radius:12px; padding:24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+            <div style="text-align:center; margin-bottom:20px;">
+                <span style="font-size:3rem; font-weight:800; color:#2563eb; display:block; line-height:1;">${porcentaje}%</span>
+                <h3 style="color: #0f172a; margin-top:8px;">¡Cuestionario Completado!</h3>
+                <p style="color: #64748b; font-size:1.05rem;">Has acertado <strong>${aciertos}</strong> de <strong>${total}</strong> preguntas en el bloque de ${tipo}.</p>
+            </div>
+            
+            <div class="quiz-name-box" style="background:#f8fafc; border:1px solid #e2e8f0; padding:16px; border-radius:8px; margin-bottom:20px;">
+                <label for="userNameInput" style="display:block; font-weight:600; margin-bottom:8px; color:#0f172a;">Introduce tu nombre para guardar tu resultado en el ranking:</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="userNameInput" placeholder="Ej. Marc Fresquet" style="flex:1; padding:10px 14px; border:1px solid #cbd5e1; border-radius:6px; font-size:1rem;">
+                    <button id="saveScoreBtn" class="button button-primary" style="padding:10px 20px;">Guardar</button>
+                </div>
+            </div>
+
+            <div id="rankingContainer" style="margin-top:20px;"></div>
         </div>
-        <div class="hero-art" aria-label="Imagen abstracta de movimiento y entrenamiento">
-          <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
-          <div class="art-label label-top">MOVE WITH PURPOSE</div>
-          <div class="art-core"><span>MF</span><small>CAFYD</small></div>
-          <div class="art-label label-bottom">01 / 03 — MOVIMIENTO</div>
-          <div class="art-sticker">La constancia<br>construye<br>capacidad.</div>
-        </div>
-      </div>
-      <div class="hero-bottom"><span>Valencia, España</span><span>Conocimiento que se mueve</span><span>© <span id="year">2026</span> Marc Fresquet</span></div>
-    </section>
+    `;
 
-    <section class="intro section-wrap">
-      <div class="section-kicker">01 — El propósito</div>
-      <div class="intro-content">
-        <h2>El ejercicio físico no debería ser complicado. <em>Debería formar parte de la vida.</em></h2>
-        <p>Este sitio nace como un proyecto académico y personal durante mi formación en Ciencias de la Actividad Física y del Deporte. Quiero convertirlo en un lugar donde reunir trabajos, recursos, experiencias e investigaciones sobre cómo el movimiento puede contribuir a la salud y a la calidad de vida.</p>
-      </div>
-    </section>
+    const saveBtn = document.getElementById('saveScoreBtn');
+    const nameInput = document.getElementById('userNameInput');
 
-    <section class="project-section" id="calidad-vida">
-      <div class="section-wrap">
-        <div class="section-heading">
-          <div><div class="section-kicker">02 — Proyecto destacado</div><p class="section-overline">Guía práctica · Entrenamiento en casa</p><h2>Ejercicio físico para<br><em>la calidad de vida.</em></h2></div>
-          <p class="section-description">Una colección de ejercicios accesibles para entrenar en casa con el peso corporal y materiales cotidianos. Aprende cómo ejecutar cada movimiento, qué musculatura participa y qué necesitas para empezar.</p>
-        </div>
-        <div class="project-stats">
-          <div><strong>45</strong><span>Ejercicios</span></div><div><strong>03</strong><span>Bloques de trabajo</span></div><div><strong>03</strong><span>Cuestionarios</span></div><div><strong>01</strong><span>Objetivo: moverse mejor</span></div>
-        </div>
-        <div class="category-grid">
-          <a class="category-card card-upper" href="#biblioteca" data-open-category="superiores">
-            <div class="category-number">01 / 03</div><div class="category-icon">↗</div><div class="category-card-bottom"><h3>Extremidades<br>superiores</h3><p>Empujes, tracciones y control del tren superior.</p><span>Ver 15 ejercicios <b>↗</b></span></div>
-          </a>
-          <a class="category-card card-lower" href="#biblioteca" data-open-category="inferiores">
-            <div class="category-number">02 / 03</div><div class="category-icon">↗</div><div class="category-card-bottom"><h3>Extremidades<br>inferiores</h3><p>Fuerza, estabilidad y patrones de rodilla y cadera.</p><span>Ver 15 ejercicios <b>↗</b></span></div>
-          </a>
-          <a class="category-card card-global" href="#biblioteca" data-open-category="globales">
-            <div class="category-number">03 / 03</div><div class="category-icon">↗</div><div class="category-card-bottom"><h3>Ejercicios<br>globales</h3><p>Estabilidad, coordinación y transferencia a la vida diaria.</p><span>Ver 15 ejercicios <b>↗</b></span></div>
-          </a>
-        </div>
+    saveBtn.addEventListener('click', () => {
+        const nombre = nameInput.value.trim() || "Anónimo";
+        guardarYMostrarRanking(nombre, aciertos, total, porcentaje, tipo);
+    });
 
-        <div class="library-head" id="biblioteca">
-          <div><div class="section-kicker">03 — Biblioteca de ejercicios</div><h2>Encuentra tu<br><em>siguiente movimiento.</em></h2></div>
-          <div class="library-controls"><label class="search-box"><span>⌕</span><input type="search" id="exerciseSearch" placeholder="Buscar ejercicio..." aria-label="Buscar ejercicio"></label></div>
-        </div>
-        <div class="tabs" role="tablist" aria-label="Categorías de ejercicios">
-          <button class="tab active" data-category="superiores" role="tab" aria-selected="true">Superiores <span>15</span></button>
-          <button class="tab" data-category="inferiores" role="tab" aria-selected="false">Inferiores <span>15</span></button>
-          <button class="tab" data-category="globales" role="tab" aria-selected="false">Globales <span>15</span></button>
-        </div>
-        <div class="exercise-grid" id="exerciseGrid" aria-live="polite"></div>
-        <p class="library-footnote">Los vídeos demostrativos de extremidades superiores e inferiores ya están incorporados. El bloque de ejercicios globales se completará cuando estén listos sus vídeos. Cada ficha incluye técnica, musculatura implicada y prerrequisitos.</p>
-      </div>
-    </section>
+    // Permitir guardar con Enter
+    nameInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            saveBtn.click();
+        }
+    });
 
-    <section class="quiz-section section-wrap" id="cuestionarios">
-      <div class="quiz-intro"><div class="section-kicker">04 — Aprende y comprueba</div><h2>¿Cuánto sabes<br><em>sobre movimiento?</em></h2><p>Comprueba lo que has aprendido con tres cuestionarios breves. Diez preguntas por bloque, explicaciones después de cada respuesta y una reflexión final.</p><div class="quiz-tip">No es un examen: es una forma de aprender, repasar y observar el movimiento con otros ojos.</div></div>
-      <div class="quiz-list" id="quizList">
-        <button class="quiz-item" data-quiz="superiores"><span class="quiz-item-num">01</span><span><strong>Extremidades superiores</strong><small>Empujes, tracciones y musculatura del tren superior</small></span><span class="quiz-item-arrow">↗</span></button>
-        <button class="quiz-item" data-quiz="inferiores"><span class="quiz-item-num">02</span><span><strong>Extremidades inferiores</strong><small>Sentadillas, zancadas y patrones de cadera</small></span><span class="quiz-item-arrow">↗</span></button>
-        <button class="quiz-item" data-quiz="globales"><span class="quiz-item-num">03</span><span><strong>Ejercicios globales</strong><small>Estabilidad, coordinación y transferencia funcional</small></span><span class="quiz-item-arrow">↗</span></button>
-      </div>
-      <div class="quiz-panel" id="quizPanel" hidden></div>
-    </section>
+    // Mostrar ranking previo por defecto
+    renderizarTablaRanking(null, aciertos, total, porcentaje, tipo);
+    quizPanel.scrollIntoView({ behavior: 'smooth' });
+}
 
-    <section class="future-section" id="investigaciones">
-      <div class="section-wrap future-grid">
-        <div><div class="section-kicker">05 — En construcción</div><p class="section-overline">Curiosidad · Evidencia · Aplicación</p><h2>Investigar para<br><em>seguir aprendiendo.</em></h2></div>
-        <div class="future-copy"><p>Este apartado crecerá con el tiempo y reunirá trabajos académicos, revisiones, proyectos, análisis y reflexiones relacionadas con el ejercicio físico y las ciencias del deporte.</p><div class="future-placeholder"><span class="future-plus">＋</span><span><strong>Próximamente</strong><small>Nuevos proyectos e investigaciones</small></span><span class="future-tag">EN DESARROLLO</span></div></div>
-      </div>
-    </section>
+function obtenerRankingLocal(tipo) {
+    const clave = `quiz_ranking_cafyd_${tipo}`;
+    const guardado = localStorage.getItem(clave);
+    if (guardado) {
+        return JSON.parse(guardado);
+    }
+    // Datos base iniciales por categoría
+    return [
+        { nombre: "Carlos M.", aciertos: 9, total: 10, porcentaje: 90 },
+        { nombre: "Lucía D.", aciertos: 8, total: 10, porcentaje: 80 },
+        { nombre: "Alejandro P.", aciertos: 7, total: 10, porcentaje: 70 }
+    ];
+}
 
-    <section class="resources-section section-wrap" id="recursos">
-      <div class="section-kicker">06 — Caja de herramientas</div><div class="resources-heading"><h2>Recursos para<br><em>llevar a la práctica.</em></h2><p>Materiales de apoyo, lecturas y herramientas que irán ampliando este espacio.</p></div>
-      <div class="resource-grid">
-        <article class="resource-card"><span>01 / GUÍAS</span><div class="resource-symbol">▤</div><h3>Guías prácticas</h3><p>Material divulgativo para comprender y aplicar conceptos del ejercicio físico.</p></article>
-        <article class="resource-card"><span>02 / LECTURAS</span><div class="resource-symbol">⌁</div><h3>Lecturas y evidencia</h3><p>Artículos y referencias para profundizar en temas de salud, fuerza y movimiento.</p></article>
-        <article class="resource-card"><span>03 / HERRAMIENTAS</span><div class="resource-symbol">＋</div><h3>Herramientas</h3><p>Recursos útiles para organizar, evaluar y desarrollar propuestas de ejercicio.</p></article>
-      </div>
-    </section>
+function guardarYMostrarRanking(nombre, aciertos, total, porcentaje, tipo) {
+    const clave = `quiz_ranking_cafyd_${tipo}`;
+    let ranking = obtenerRankingLocal(tipo);
 
-    <section class="about-section" id="sobre-mi"><div class="section-wrap about-grid"><div><div class="section-kicker">07 — Sobre este espacio</div><h2>Formación en<br><em>movimiento.</em></h2></div><div class="about-copy"><p class="about-lead">Soy Marc Fresquet, estudiante de Ciencias de la Actividad Física y del Deporte.</p><p>Este espacio es una extensión de mi aprendizaje: un lugar para ordenar ideas, compartir proyectos y acercar el conocimiento sobre ejercicio físico a cualquier persona interesada en moverse mejor.</p><p>El objetivo es seguir construyendo este sitio durante mi formación y mi futuro recorrido profesional, incorporando nuevos trabajos, investigaciones y recursos basados en el conocimiento y la experiencia.</p><div class="about-signature">Marc Fresquet <span>· CAFYD</span></div></div></div></section>
-  </main>
+    const nuevoResultado = {
+        nombre,
+        aciertos,
+        total,
+        porcentaje,
+        esActual: true
+    };
 
-  <footer class="site-footer"><div class="footer-top"><a class="brand brand-footer" href="#inicio"><span class="brand-mark">MF<span>.</span></span><span class="brand-copy"><strong>Marc Fresquet</strong><small>Movimiento · Salud · Rendimiento</small></span></a><p>Aprender, aplicar y compartir.<br>Un movimiento cada vez.</p><a href="#inicio" class="back-top">Volver arriba ↑</a></div><div class="footer-bottom"><span>© <span id="yearFooter">2026</span> Marc Fresquet</span><span>Contenido divulgativo y educativo. Adapta el ejercicio a tu condición y experiencia.</span><span>Hecho para evolucionar.</span></div></footer>
+    // Desmarcar anteriores y añadir nuevo
+    ranking.forEach(item => delete item.esActual);
+    ranking.push(nuevoResultado);
 
-  <script src="assets/js/data.js"></script>
-  <script src="assets/js/app.js"></script>
-</body>
-</html>
+    // Ordenar de mayor a menor porcentaje y aciertos
+    ranking.sort((a, b) => b.porcentaje - a.porcentaje || b.aciertos - a.aciertos);
+
+    localStorage.setItem(clave, JSON.stringify(ranking));
+    renderizarTablaRanking(nombre, aciertos, total, porcentaje, tipo);
+}
+
+function renderizarTablaRanking(nombreUsuarioActual, aciertos, total, porcentaje, tipo) {
+    const container = document.getElementById('rankingContainer');
