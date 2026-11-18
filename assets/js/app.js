@@ -107,15 +107,142 @@
     document.getElementById('quizClose').addEventListener('click', closeQuiz);
   }
 
+  // --- Sistema de Ranking y LocalStorage ---
+  function obtenerRankingLocal(tipo) {
+    const clave = `quiz_ranking_cafyd_${tipo}`;
+    const guardado = localStorage.getItem(clave);
+    if (guardado) {
+      return JSON.parse(guardado);
+    }
+    // Datos base iniciales por categoría
+    return [
+      { nombre: "Carlos M.", aciertos: 9, total: 10, porcentaje: 90 },
+      { nombre: "Lucía D.", aciertos: 8, total: 10, porcentaje: 80 },
+      { nombre: "Alejandro P.", aciertos: 7, total: 10, porcentaje: 70 }
+    ];
+  }
+
+  function guardarYMostrarRanking(nombre, aciertos, total, porcentaje, tipo) {
+    const clave = `quiz_ranking_cafyd_${tipo}`;
+    let ranking = obtenerRankingLocal(tipo);
+
+    const nuevoResultado = {
+      nombre,
+      aciertos,
+      total,
+      porcentaje,
+      esActual: true
+    };
+
+    ranking.forEach(item => delete item.esActual);
+    ranking.push(nuevoResultado);
+    ranking.sort((a, b) => b.porcentaje - a.porcentaje || b.aciertos - a.aciertos);
+
+    localStorage.setItem(clave, JSON.stringify(ranking));
+    renderizarTablaRanking(nombre, aciertos, total, porcentaje, tipo);
+  }
+
+  function renderizarTablaRanking(nombreUsuarioActual, aciertos, total, porcentaje, tipo) {
+    const container = document.getElementById('rankingContainer');
+    if (!container) return;
+
+    const ranking = obtenerRankingLocal(tipo);
+    const mejores = ranking.filter(item => item.porcentaje < porcentaje).length;
+    const percentil = ranking.length > 1 ? Math.round((mejores / ranking.length) * 100) : 50;
+
+    container.innerHTML = `
+      <p style="margin-bottom:15px; font-size:0.95rem; color:#334155;">
+        📊 Con un <strong>${porcentaje}%</strong> de aciertos, superas al <strong>${percentil}%</strong> de los participantes registrados.
+      </p>
+      <h4 style="margin-bottom:12px; border-bottom:2px solid #e2e8f0; padding-bottom:6px; color:#0f172a;">Ranking en Directo</h4>
+      <div style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.95rem;">
+              <thead>
+                  <tr style="background:#f8fafc; border-bottom:2px solid #e2e8f0;">
+                      <th style="padding:10px;">Pos</th>
+                      <th style="padding:10px;">Participante</th>
+                      <th style="padding:10px;">Aciertos</th>
+                      <th style="padding:10px;">Precisión</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  ${ranking.slice(0, 10).map((item, idx) => {
+                      const medalla = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
+                      const esEste = item.nombre === nombreUsuarioActual || item.esActual;
+                      const highlight = esEste ? 'background-color:#eff6ff; font-weight:bold;' : '';
+                      return `
+                          <tr style="${highlight} border-bottom:1px solid #e2e8f0;">
+                              <td style="padding:10px;">${medalla}</td>
+                              <td style="padding:10px;">${escapeHtml(item.nombre)} ${esEste ? '<span style="background:#2563eb; color:#fff; font-size:0.7rem; padding:2px 6px; border-radius:4px; margin-left:6px;">Tú</span>' : ''}</td>
+                              <td style="padding:10px;">${item.aciertos}/${item.total}</td>
+                              <td style="padding:10px;">
+                                  <div style="width:90px; height:8px; background:#e2e8f0; border-radius:4px; display:inline-block; vertical-align:middle; margin-right:8px; overflow:hidden;">
+                                      <div style="height:100%; width:${item.porcentaje}%; background:#10b981;"></div>
+                                  </div>
+                                  <strong>${item.porcentaje}%</strong>
+                              </td>
+                          </tr>
+                      `;
+                  }).join('')}
+              </tbody>
+          </table>
+      </div>
+    `;
+  }
+  // ------------------------------------------
+
   function renderResult() {
     const quiz = data.quizzes[activeQuizKey];
     const score = answers.reduce((sum, answer, index) => sum + (answer === quiz.questions[index][2] ? 1 : 0), 0);
+    const total = quiz.questions.length;
+    const porcentaje = Math.round((score / total) * 100);
     const message = score >= 9 ? '¡Excelente! Tienes muy claros los conceptos.' : score >= 7 ? '¡Buen trabajo! Has comprendido gran parte del contenido.' : score >= 5 ? 'Vas por buen camino. Repasa las explicaciones y vuelve a intentarlo.' : 'Este es un buen punto de partida para aprender. Revisa las fichas y prueba otra vez.';
+    
     quizPanel.innerHTML = `
-      <div class="quiz-result"><div class="section-kicker">Cuestionario completado</div><div class="quiz-score">${score}<span style="font-size:25px;color:#94a18f"> / 10</span></div><h3>${escapeHtml(message)}</h3><p>Has respondido las diez preguntas de ${escapeHtml(quiz.title.toLowerCase())}.</p>
-        <div class="debate-box"><strong>Para reflexionar</strong><p>${escapeHtml(quiz.debate)}</p><textarea id="debateAnswer" placeholder="Escribe aquí tu reflexión (opcional)..." aria-label="Tu reflexión"></textarea></div>
-        <div class="quiz-actions"><button class="quiz-close" id="reviewQuiz" type="button">Revisar respuestas</button><button class="quiz-restart" id="restartQuiz" type="button">Repetir cuestionario ↻</button></div>
+      <div class="quiz-result">
+        <div class="section-kicker">Cuestionario completado</div>
+        <div class="quiz-score">${score}<span style="font-size:25px;color:#94a18f"> / ${total}</span></div>
+        <h3>${escapeHtml(message)}</h3>
+        <p>Has respondido las diez preguntas de ${escapeHtml(quiz.title.toLowerCase())}. Tu precisión es del <strong>${porcentaje}%</strong>.</p>
+        
+        <div class="quiz-name-box" style="background:#f8fafc; border:1px solid #e2e8f0; padding:16px; border-radius:8px; margin:20px 0; text-align:left;">
+          <label for="userNameInput" style="display:block; font-weight:600; margin-bottom:8px; color:#0f172a;">Introduce tu nombre para guardar tu resultado en el ranking:</label>
+          <div style="display:flex; gap:10px;">
+            <input type="text" id="userNameInput" placeholder="Ej. Marc Fresquet" style="flex:1; padding:10px 14px; border:1px solid #cbd5e1; border-radius:6px; font-size:1rem;">
+            <button id="saveScoreBtn" class="quiz-next" type="button" style="padding:10px 20px; cursor:pointer;">Guardar</button>
+          </div>
+        </div>
+
+        <div id="rankingContainer" style="margin-top:20px; text-align:left;"></div>
+
+        <div class="debate-box" style="margin-top:20px;">
+          <strong>Para reflexionar</strong>
+          <p>${escapeHtml(quiz.debate)}</p>
+          <textarea id="debateAnswer" placeholder="Escribe aquí tu reflexión (opcional)..." aria-label="Tu reflexión"></textarea>
+        </div>
+        <div class="quiz-actions" style="margin-top:20px;">
+          <button class="quiz-close" id="reviewQuiz" type="button">Revisar respuestas</button>
+          <button class="quiz-restart" id="restartQuiz" type="button">Repetir cuestionario ↻</button>
+        </div>
       </div>`;
+
+    const saveBtn = document.getElementById('saveScoreBtn');
+    const nameInput = document.getElementById('userNameInput');
+
+    saveBtn.addEventListener('click', () => {
+      const nombre = nameInput.value.trim() || "Anónimo";
+      guardarYMostrarRanking(nombre, score, total, porcentaje, activeQuizKey);
+    });
+
+    nameInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        saveBtn.click();
+      }
+    });
+
+    // Renderizar tabla inicial del ranking antes de guardar
+    renderizarTablaRanking(null, score, total, porcentaje, activeQuizKey);
+
     document.getElementById('reviewQuiz').addEventListener('click', () => { questionIndex = 0; renderQuestion(); });
     document.getElementById('restartQuiz').addEventListener('click', () => openQuiz(activeQuizKey));
   }
